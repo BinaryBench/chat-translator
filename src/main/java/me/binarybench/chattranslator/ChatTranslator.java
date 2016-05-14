@@ -2,6 +2,7 @@ package me.binarybench.chattranslator;
 
 import me.binarybench.chattranslator.api.Lang;
 import me.binarybench.chattranslator.commands.LangCommand;
+import me.binarybench.chattranslator.listeners.ChatListener;
 import me.binarybench.chattranslator.message.TranslateMessage;
 import me.binarybench.chattranslator.translator.GoogleAppsTranslator;
 import me.binarybench.chattranslator.translator.TranslatorManager;
@@ -24,7 +25,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Bench on 5/13/2016.
  */
-public class ChatTranslator extends JavaPlugin implements Listener {
+public class ChatTranslator extends JavaPlugin {
 
     public static final String PRE = "<t>";
     public static final String POST = "<\\t>";
@@ -38,30 +39,29 @@ public class ChatTranslator extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        //Init var
         this.threadPool = Executors.newCachedThreadPool();
-
         this.translator = new TranslatorManager(getThreadPool(), new GoogleAppsTranslator());
-
         langs = new ConcurrentHashMap<Player, Lang>();
 
+        //Config
         getCommand("language").setExecutor(new LangCommand(this));
-
         getConfig().options().copyDefaults(true);
 
         String stringDefaultLang = getConfig().getString("default-language", defaultLang.getId());
         this.defaultLang = Lang.getLang(stringDefaultLang);
 
-        Bukkit.getPluginManager().registerEvents(this, this);
+
+        //Listeners
+        Bukkit.getPluginManager().registerEvents(new ChatListener(this), this);
+
     }
-
-
 
     public Lang getLang(Player player)
     {
         Lang lang;
         return (lang = langs.get(player)) == null ? defaultLang : lang;
     }
-
 
     public boolean setLang(Player player, Lang lang)
     {
@@ -74,19 +74,9 @@ public class ChatTranslator extends JavaPlugin implements Listener {
         return true;
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onChat(AsyncPlayerChatEvent event)
+    public static String t(String translatedText)
     {
-        event.setCancelled(true);
-
-        broadcastMessage(getLang(event.getPlayer()).getId(), formatChat(event.getFormat(), event.getPlayer().getName(), PRE + event.getMessage() + POST), event.getRecipients());
-
-    }
-
-    public static String formatChat(String format, String name, String message)
-    {
-
-        return String.format(format, name, message);
+        return PRE + translatedText + POST;
     }
 
     public void broadcastMessage(String sourceLang, String message, Collection<? extends Player> players)
