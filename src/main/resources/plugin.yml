@@ -1,0 +1,16 @@
+name: ChatTranslator
+version: 1.0
+main: me.binarybench.chattranslator.ChatTranslator
+author: BinaryBench
+
+commands:
+   language:
+     description: Set your language!
+     aliases: [lang, setlang, setlanguage]
+     permission: chattranslator
+     usage: /command <language>
+
+permissions:
+   chattranslator.command:
+     description: Allows access to the /language command
+     default: true

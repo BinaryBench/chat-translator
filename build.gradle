@@ -1,0 +1,35 @@
+group 'me.binarybench'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+libsDirName = 'D:\\Servers\\Spigot-1.9.2\\plugins';
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    //Add configuration!
+    includeInJar
+}
+
+dependencies {
+    //Tests!
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+
+    //Add all jars in src/main/libs
+    compile fileTree(include: ['*.jar'], dir: 'src/main/libs')
+
+    includeInJar 'org.apache.httpcomponents:httpclient:4.5.2'
+
+    configurations.compile.extendsFrom(configurations.includeInJar)
+}
+
+jar {
+
+    from configurations.includeInJar.collect { zipTree it }
+
+}
