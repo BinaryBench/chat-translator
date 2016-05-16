@@ -49,7 +49,7 @@ public class TranslateTest {
     public void testCache()
     {
         translatorManager.translateSync(sourceLang, targetLang, sourceText);
-        assertNotNull(translatorManager.getCache().getIfPresent(new TranslateInfo(sourceLang, targetLang, sourceText)));
+        assertNotNull("TranslateManager did not cache value!", translatorManager.getCache().getIfPresent(new TranslateInfo(sourceLang, targetLang, sourceText)));
     }
 
 }
