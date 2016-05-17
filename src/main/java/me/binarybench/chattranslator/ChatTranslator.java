@@ -47,7 +47,7 @@ public class ChatTranslator extends JavaPlugin implements Listener {
     private TranslatorManager translator;
     private ExecutorService threadPool;
 
-    private LangStorage langStorage;
+    private volatile LangStorage langStorage;
 
     @Override
     public void onEnable() {
@@ -56,29 +56,41 @@ public class ChatTranslator extends JavaPlugin implements Listener {
         this.translator = new TranslatorManager(getThreadPool(), new GoogleAppsTranslator());
         langs = new ConcurrentHashMap<Player, Lang>();
 
+
         //Config
-        getCommand("language").setExecutor(new LangCommand(this));
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        String stringDefaultLang = getConfig().getString("default-language", defaultLang.getId());
-        this.defaultLang = Lang.getLang(stringDefaultLang);
+        String stringDefaultLang = getConfig().getString("default-language");
+        Lang lang;
+        if ((lang = Lang.getLang(stringDefaultLang)) != null)
+            this.defaultLang = lang;
+
+
 
         //Storage
         File yamlFile = new File(getDataFolder() + File.separator + "languages.yml");
-        yamlFile.getParentFile().mkdirs();
-        if (!yamlFile.exists()) {
-            try
-            {
-                yamlFile.createNewFile();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+
+        try
+        {
+            if (yamlFile.getParentFile().mkdirs() && yamlFile.createNewFile())
+                System.out.printf("Language file not found, creating: %s\n", yamlFile.getName());
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
 
         this.langStorage = new YamlLangStorage(yamlFile);
+
+
+        //Commands
+        getCommand("language").setExecutor(new LangCommand(this));
+
+
+        //Load lang (in case there are players online when the server starts up)
+        for (Player player : Bukkit.getOnlinePlayers())
+                this.loadLang(player);
 
         //Listeners
         Bukkit.getPluginManager().registerEvents(new ChatListener(this), this);
