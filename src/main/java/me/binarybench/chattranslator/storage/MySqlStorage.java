@@ -13,9 +13,9 @@ public class MySqlStorage implements LangStorage {
 
     //TODO thread pooling
 
-    private static String CREATE_TABLE = "CREATE TABLE `player_data`.`player_lang` (`uuid` VARCHAR(36) NOT NULL, `lang` VARCHAR(5) NOT NULL, PRIMARY KEY (`uuid`));";
-    private static String QUERY = "SELECT * FROM `player_lang` WHERE uuid=?;";
-    private static String UPDATE = "INSERT INTO `player_lang` (uuid, lang) values (?, ?) ON DUPLICATE KEY UPDATE lang=values(lang);";
+    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `player_lang` (`uuid` VARCHAR(36) NOT NULL, `lang` VARCHAR(5) NOT NULL, PRIMARY KEY (`uuid`));";
+    private static final String QUERY = "SELECT * FROM `player_lang` WHERE uuid=?;";
+    private static final String UPDATE = "INSERT INTO `player_lang` (uuid, lang) values (?, ?) ON DUPLICATE KEY UPDATE lang=values(lang);";
 
     private DataSource dataSource;
 
@@ -28,6 +28,33 @@ public class MySqlStorage implements LangStorage {
         url = "jdbc:mysql://localhost:3306/player_data";
         user = "root";
         pass = "123456789"; //like my secure password?
+        createTable();
+    }
+
+    public void createTable()
+    {
+        Connection con = null;
+        try
+        {
+            con = getConnection();
+            PreparedStatement sql = con.prepareStatement(CREATE_TABLE);
+            sql.executeUpdate();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            if (con != null)
+                try
+                {
+                    con.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
+        }
     }
 
     public void setLang(UUID playersUUID, String lang)
