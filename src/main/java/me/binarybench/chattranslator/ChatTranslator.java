@@ -6,6 +6,7 @@ import me.binarybench.chattranslator.commands.LangCommand;
 import me.binarybench.chattranslator.listeners.ChatListener;
 import me.binarybench.chattranslator.message.TranslateMessage;
 import me.binarybench.chattranslator.storage.DudLangStorage;
+import me.binarybench.chattranslator.storage.MySqlStorage;
 import me.binarybench.chattranslator.storage.YamlLangStorage;
 import me.binarybench.chattranslator.translator.GoogleAppsTranslator;
 import me.binarybench.chattranslator.translator.TranslatorManager;
@@ -22,6 +23,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,7 +71,7 @@ public class ChatTranslator extends JavaPlugin implements Listener {
 
 
         //Storage
-        File yamlFile = new File(getDataFolder() + File.separator + "languages.yml");
+        /*File yamlFile = new File(getDataFolder() + File.separator + "languages.yml");
 
         try
         {
@@ -82,7 +84,8 @@ public class ChatTranslator extends JavaPlugin implements Listener {
         }
 
         this.langStorage = new YamlLangStorage(yamlFile);
-
+        */
+        this.langStorage = new MySqlStorage();
 
         //Commands
         getCommand("language").setExecutor(new LangCommand(this));
@@ -124,6 +127,7 @@ public class ChatTranslator extends JavaPlugin implements Listener {
 
         if (lang.equals(Lang.DETECT_LANG))
             return false;
+
 
         getThreadPool().execute(new Runnable() {
             public void run() {
@@ -176,6 +180,7 @@ public class ChatTranslator extends JavaPlugin implements Listener {
 
 
 
+    @Contract(pure = true)
     public static String t(String translatedText)
     {
         return PRE + translatedText + POST;
