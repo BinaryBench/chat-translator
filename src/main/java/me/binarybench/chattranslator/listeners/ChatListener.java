@@ -1,6 +1,8 @@
 package me.binarybench.chattranslator.listeners;
 
 import me.binarybench.chattranslator.ChatTranslator;
+import me.binarybench.chattranslator.api.TranslateModule;
+import me.binarybench.chattranslator.message.TranslateMessage;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -11,9 +13,9 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
  */
 public class ChatListener implements Listener {
 
-    private ChatTranslator plugin;
+    private TranslateModule plugin;
 
-    public ChatListener(ChatTranslator plugin) {
+    public ChatListener(TranslateModule plugin) {
         this.plugin = plugin;
     }
 
@@ -26,7 +28,7 @@ public class ChatListener implements Listener {
                 plugin.getLang(event.getPlayer()).getId(),
                 formatChat(
                         event.getFormat(), event.getPlayer().getName(),
-                        ChatTranslator.t(event.getMessage())),
+                        TranslateModule.t(event.getMessage())),
                 event.getRecipients());
 
     }

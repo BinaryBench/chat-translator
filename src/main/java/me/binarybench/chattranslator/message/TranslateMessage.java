@@ -2,6 +2,7 @@ package me.binarybench.chattranslator.message;
 
 import javafx.scene.control.Cell;
 import me.binarybench.chattranslator.ChatTranslator;
+import me.binarybench.chattranslator.api.TranslateModule;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.ChatColor;
@@ -20,7 +21,7 @@ import java.util.concurrent.Future;
 public class TranslateMessage {
 
 
-    private ChatTranslator plugin;
+    private TranslateModule plugin;
     private String sourceLang;
 
     private Collection<? extends Player> players;
@@ -28,7 +29,7 @@ public class TranslateMessage {
     private List<Text> texts;
 
 
-    public TranslateMessage(String sourceLang, ChatTranslator plugin, Collection<? extends Player> players)
+    public TranslateMessage(String sourceLang, TranslateModule plugin, Collection<? extends Player> players)
     {
         this.sourceLang = sourceLang;
         this.plugin = plugin;
@@ -103,7 +104,7 @@ public class TranslateMessage {
         return sourceLang;
     }
 
-    public ChatTranslator getPlugin()
+    public TranslateModule getPlugin()
     {
         return plugin;
     }

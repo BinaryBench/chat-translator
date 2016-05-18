@@ -2,6 +2,7 @@ package me.binarybench.chattranslator.commands;
 
 import me.binarybench.chattranslator.ChatTranslator;
 import me.binarybench.chattranslator.api.Lang;
+import me.binarybench.chattranslator.api.TranslateModule;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,9 +13,9 @@ import org.bukkit.entity.Player;
  */
 public class LangCommand implements CommandExecutor {
 
-    private ChatTranslator plugin;
+    private TranslateModule plugin;
 
-    public LangCommand(ChatTranslator plugin) {
+    public LangCommand(TranslateModule plugin) {
         this.plugin = plugin;
     }
 
@@ -70,7 +71,7 @@ public class LangCommand implements CommandExecutor {
     }
 
 
-    public ChatTranslator getPlugin() {
+    public TranslateModule getPlugin() {
         return plugin;
     }
 }
