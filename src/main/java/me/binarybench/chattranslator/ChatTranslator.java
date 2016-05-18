@@ -23,7 +23,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.IOException;
@@ -180,7 +179,7 @@ public class ChatTranslator extends JavaPlugin implements Listener {
 
 
 
-    @Contract(pure = true)
+
     public static String t(String translatedText)
     {
         return PRE + translatedText + POST;
