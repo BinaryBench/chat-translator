@@ -1,1 +1,11 @@
-default-language: "en"
+DefaultLanguage: "en"
+
+YAML.enabled: true
+YAML.fileName: "languages.yml"
+
+MySQL:
+   enabled: false
+   url: "jdbc:mysql://localhost/test"
+   user: "root"
+   password: ""
+

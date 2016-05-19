@@ -5,34 +5,15 @@ import me.binarybench.chattranslator.api.LangStorage;
 import me.binarybench.chattranslator.api.TranslateModule;
 import me.binarybench.chattranslator.commands.LangCommand;
 import me.binarybench.chattranslator.listeners.ChatListener;
-import me.binarybench.chattranslator.message.TranslateMessage;
-import me.binarybench.chattranslator.storage.DudLangStorage;
 import me.binarybench.chattranslator.storage.MySqlStorage;
 import me.binarybench.chattranslator.storage.YamlLangStorage;
 import me.binarybench.chattranslator.translator.GoogleAppsTranslator;
-import me.binarybench.chattranslator.translator.TranslatorManager;
-import me.binarybench.chattranslator.translator.UnsupportedLanguageException;
 import org.bukkit.Bukkit;
-import org.bukkit.FireworkEffect;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Bench on 5/13/2016.
@@ -41,37 +22,61 @@ public class ChatTranslator extends JavaPlugin implements Listener {
 
     private volatile TranslateModule translateModule;
 
+
+    // Config
+    public static final String DEFAULT_LANG = "DefaultLanguage";
+
+    public static final String CONFIG_ENABLED = "enabled";
+
+    // YAML Config
+    public static final String YAML_SECTION = "YAML";
+    public static final String YAML_ENABLED = YAML_SECTION + "." + CONFIG_ENABLED;
+    public static final String YAML_FILE_NAME = YAML_SECTION + ".fileName";
+
+    // MySQL Config
+    public static final String MYSQL_SECTION = "MySQL";
+    public static final String MYSQL_ENABLED = MYSQL_SECTION + "." + CONFIG_ENABLED;
+    public static final String MYSQL_URL = MYSQL_SECTION + ".url";
+    public static final String MYSQL_USER = MYSQL_SECTION + ".user";
+    public static final String MYSQL_PASS = MYSQL_SECTION + ".password";
+
+
+
     @Override
-    public void onEnable() {
+    public void onEnable()
+    {
 
 
         //Config
-        getConfig().options().copyDefaults(true);
+        //getConfig().options().copyDefaults(true);
+        saveDefaultConfig();
         saveConfig();
 
-        String stringDefaultLang = getConfig().getString("default-language");
+        String stringDefaultLang = getConfig().getString(DEFAULT_LANG);
+
         Lang defaultLang;
         if ((defaultLang = Lang.getLang(stringDefaultLang)) == null)
             defaultLang = Lang.ENGLISH;
 
+        //YAML - config
+        boolean yamlEnabled = (Boolean) getConfig().get(YAML_ENABLED);
+        String yamlFileName = (String) getConfig().get(YAML_FILE_NAME);
+
+        //MySQL - config
+        boolean mySQLEnabled = (Boolean) getConfig().get(MYSQL_ENABLED);
+        String mySQLurl = (String) getConfig().get(MYSQL_URL);
+        String mySQLUser = (String) getConfig().get(MYSQL_USER);
+        String mySQLPass = (String) getConfig().get(MYSQL_PASS);
+
+
         //Storage
-        LangStorage langStorage = new MySqlStorage();
+        LangStorage langStorage = null;
 
+        if (mySQLEnabled)
+            langStorage = new MySqlStorage(mySQLurl, mySQLUser, mySQLPass);
+        else if (yamlEnabled)
+            langStorage = new YamlLangStorage(new File(getDataFolder() + File.separator + yamlFileName));
 
-        /*File yamlFile = new File(getDataFolder() + File.separator + "languages.yml");
-
-        try
-        {
-            if (yamlFile.getParentFile().mkdirs() && yamlFile.createNewFile())
-                System.out.printf("Language file not found, creating: %s\n", yamlFile.getName());
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        this.langStorage = new YamlLangStorage(yamlFile);
-        */
 
         translateModule = new TranslateModule(this, new GoogleAppsTranslator(), langStorage, defaultLang);
 
@@ -84,6 +89,19 @@ public class ChatTranslator extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new ChatListener(translateModule), this);
 
     }
+
+
+    public static void printConfigurationSection(ConfigurationSection con)
+    {
+
+        for (String key : con.getKeys(true))
+        {
+            System.out.printf("%s: %s", key, con.get(key).toString());
+        }
+
+
+    }
+
 
     public TranslateModule getTranslateModule()
     {

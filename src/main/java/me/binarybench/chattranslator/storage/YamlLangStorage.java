@@ -17,6 +17,16 @@ public class YamlLangStorage implements LangStorage {
 
     public YamlLangStorage(File saveFile)
     {
+        try
+        {
+            if (saveFile.getParentFile().mkdirs() && saveFile.createNewFile())
+                System.out.printf("Language file not found, creating: %s\n", saveFile.getName());
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
         this.saveFile = saveFile;
         this.yamlConfiguration = YamlConfiguration.loadConfiguration(saveFile);
     }

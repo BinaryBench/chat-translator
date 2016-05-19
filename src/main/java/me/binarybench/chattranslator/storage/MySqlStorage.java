@@ -23,11 +23,11 @@ public class MySqlStorage implements LangStorage {
     private String user;
     private String pass;
 
-    public MySqlStorage()
+    public MySqlStorage(String url, String user, String pass)
     {
-        url = "jdbc:mysql://localhost:3306/player_data";
-        user = "root";
-        pass = "123456789"; //like my secure password?
+        this.url = url;
+        this.user = user;
+        this.pass = pass;
         createTable();
     }
 
