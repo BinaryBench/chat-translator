@@ -50,4 +50,13 @@ public class Text {
         return translations.get(lang).get();
     }
 
+    public String getOriginalText()
+    {
+        return originalText;
+    }
+
+    public boolean isTranslate()
+    {
+        return translations != null;
+    }
 }

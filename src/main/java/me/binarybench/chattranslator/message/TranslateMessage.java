@@ -75,23 +75,34 @@ public class TranslateMessage {
 
                 for (Map.Entry<String, Set<Player>> entry : langs.entrySet())
                 {
-                    StringBuilder builder = new StringBuilder();
+                    //StringBuilder builder = new StringBuilder();
+                    FancyText fancyText = new FancyText();
+
 
                     try {
                         for (Text text : texts)
                         {
-                            builder.append(text.getText(entry.getKey()));
+                            if (text.isTranslate())
+                            {
+                                fancyText.addHoverEvent(text.getText(entry.getKey()), text.getOriginalText());
+                            }
+                            else
+                            {
+                                fancyText.addText(text.getOriginalText());
+                            }
                         }
                     }
                     catch (Exception e)
                     {
                         e.printStackTrace();
                         System.err.println("An error occurred while translating the message to: " + entry.getKey() + "!");
-                        builder = new StringBuilder(ChatColor.RED + "An error occurred while translating the message");
+                        fancyText = new FancyText().addText(ChatColor.RED + "An error occurred while translating the message");
+                                //new StringBuilder(ChatColor.RED + "An error occurred while translating the message");
                     }
 
                     for (Player player : entry.getValue())
-                        player.sendMessage(builder.toString());
+                        fancyText.sendToPlayer(player);
+                        //player.sendMessage(builder.toString());
                 }
             }
         });
