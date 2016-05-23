@@ -1,5 +1,6 @@
 package me.binarybench.chattranslator.util;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.commons.codec.binary.Base64;
@@ -11,20 +12,20 @@ import org.bukkit.entity.Player;
  */
 public class LanguageUtil {
 
-    public static boolean isSteveSkin(Player player)
+    public static boolean isMale(Player player)
     {
         String profile = new String(Base64.decodeBase64(((CraftPlayer) player).getHandle().getProfile().getProperties().get("textures").iterator().next().getValue()));
         JsonObject jsonObject = new JsonParser().parse(profile).getAsJsonObject();
-        boolean steve = true;
-        try
-        {
-            steve = !jsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN").getAsJsonObject("metadata").get("model").getAsString().equals("slim");
-        }
-        catch (NullPointerException ignored)
-        {
 
-        }
-        return steve;
+        JsonObject metadata = jsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN").getAsJsonObject("metadata");
+
+        if (metadata == null)
+            return true;
+
+        JsonElement model = metadata.get("model");
+
+        return model == null || !model.getAsString().equals("slim");
+
     }
 
 }
